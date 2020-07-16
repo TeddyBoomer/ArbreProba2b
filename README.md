@@ -71,10 +71,8 @@ U.solution(intersection=True, mode="full")
 U.gv.render("solution2-full-dec")
 ```
 
-<img src="enonce2-vide-dec.png" width="300">
-<img src="enonce2-full-dec.png" width="300">
-<img src="enonce2-partial-dec.png" width="300">
-<img src="solution2-full-dec.png" width="300">
+<img src="enonce2-vide-dec.png" width="300"><img src="enonce2-full-dec.png" width="300">
+<img src="enonce2-partial-dec.png" width="300"><img src="solution2-full-dec.png" width="300">
 
 Réglage des noms des événements, et passage en % 
 
