@@ -16,8 +16,10 @@ dépendances:
 * modules python: Graphviz, sympy — installés automatiquement
 * logiciel [Graphviz](https://graphviz.org/) — à installer vous-même.
 
+
 Illustration de principe:
 =========================
+
 
 ```python
 from ArbreProba2b import arbre_proba
@@ -36,10 +38,8 @@ T.solution(intersection=True, mode="full")
 T.gv.render("solution1-full-frac")
 ```
 
-<img src="enonce1-vide-frac.png" width="300">
-<img src="enonce1-full-frac.png" width="300">
-<img src="enonce1-partial-frac.png" width="300">
-<img src="solution1-full-frac.png" width="300">
+<img src="enonce1-vide-frac.png" width="300"><img src="enonce1-full-frac.png" width="300">
+<img src="enonce1-partial-frac.png" width="300"><img src="solution1-full-frac.png" width="300">
 
 * L'option `mode` (`full` ou `partial`) permet d'afficher les probabilités des intersections en bout de branche.
 * L'option `intersection` (booléen) indique si on doit afficher les probabilités d'intersection connues (même si `mode=partial`)
@@ -94,10 +94,10 @@ V.solution(intersection=True, mode="full")
 V.gv.render("solution3-full-pourc")
 ```
 
-<img src="enonce3-vide-pourc.png" width="300">
-<img src="enonce3-full-pourc.png" width="300">
-<img src="enonce3-partial-pourc.png" width="300">
-<img src="solution3-full-pourc.png" width="300">
+<img src="enonce3-vide-pourc.png" width="300"><img src="enonce3-full-pourc.png" width="300">
+<img src="enonce3-partial-pourc.png" width="300"><img src="solution3-full-pourc.png" width="300">
+
+Les noms sont du simple texte et vous ne pourrez pas mettre des indices ou des notations type LaTeX.
 
 Si vous ne donnez que la probabilité `b` ou `cb=1-b` dans les paramètres, 
 alors, l'arbre généré commencera automatiquement par l'événement B.
@@ -108,6 +108,23 @@ W.solution(mode="partial")
 W.gv.render("solution4-partial-pourc")
 ```
 <img src="solution4-partial-pourc.png" width="300">
+
+Notation des probabilités:
+==========================
+
+Les probabilités sont notées de façon générique pour deux événements. 
+* *a*: la probabilité de A
+* *ca*: celle de son complémentaire
+* *b*: celle de B
+* *a_b*: probabilité conditionnelle de A sachant B
+* *ca_cb*: probabilité conditionnelle du complémentaire de A sachant celui de B
+* *b_ca*: celle de B sachant le complémentaire de A
+* etc.
+* *ab*: probabilité de l'intersection de A et B
+* *cab*: celle du complémentaire de A et de B
+* *cacb, acb*: intersections de la même façon…
+
+Attention, du coup, pour les intersections, le nom commence par *a* ou *ca*, donc il faut bien noter *cab* et non *bca*.
 
 Représentation des nombres
 ==========================
