@@ -23,6 +23,7 @@ Illustration de principe:
 
 ```python
 from ArbreProba2b import arbre_proba
+from sympy import S
 
 T = arbre_proba(a_cb=S(1)/4, b=S(3)/10, cab=S(1)/10, nbformat="fraction")
 T.enonce_vide(intersection=True, mode = "full")
@@ -111,9 +112,7 @@ Notation des probabilités:
 ==========================
 
 Les probabilités sont notées de façon générique pour deux événements. 
-* *a*: la probabilité de A
-* *ca*: celle de son complémentaire
-* *b*: celle de B
+* *a, ca, b, cb*: la probabilité de A, du complémentaire de A, de B, du complémentaire de B
 * *a_b*: probabilité conditionnelle de A sachant B
 * *ca_cb*: probabilité conditionnelle du complémentaire de A sachant celui de B
 * *b_ca*: celle de B sachant le complémentaire de A

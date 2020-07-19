@@ -19,6 +19,8 @@ On peut choisir le format de présentation des probabilités:
 decimal, pourcentage, fraction
 """
 
+__version__ = '0.2'
+
 a,ca,b,cb,ab,cab,acb,cacb,b_a = symbols("a ca b cb ab cab acb cacb b_a")
 cb_a,b_ca,cb_ca,a_b,ca_b = symbols("cb_a b_ca cb_ca a_b ca_b")
 a_cb,ca_cb = symbols("a_cb ca_cb")
@@ -35,6 +37,12 @@ class arbre_proba():
     :param intersection: indique si on remplit la probabilité de
         l'intersection en bout de branche quand elle est connue
     :type intersection: bool
+
+    Exemple::
+
+    >>> T = arbre_proba(a_cb=S(1)/4, b=S(3)/10, cab=S(1)/10, nbformat="fraction")
+    >>> T.solution(intersection=True, mode = "full")
+    >>> T.gv.render("solution-frac")
     """
     
     def __init__(self, **kwargs):
@@ -59,11 +67,11 @@ class arbre_proba():
         L3tmp = list()
         for e in s:
             for f in Symb:
-                if e in kwargs and f.name==e:
+                if e in kwargs and f.name == e:
                     val = kwargs[e]
                     Ltmp.append((f, val))
                     L2tmp.append((e, val))
-                elif f.name==e:
+                elif f.name == e:
                     L3tmp.append((e, "…"))
         self.known = dict(Ltmp)
         self.known_names = dict(L2tmp)
@@ -79,6 +87,7 @@ class arbre_proba():
 
         # système des contraintes
         if "indep" not in kwargs:
+            self.indep = False
             self.SYS =[Eq(a+ca,1), Eq(b+cb,1), Eq(ab+cab, b), Eq(ab+acb,a),
                        Eq(acb+cacb, cb), Eq(cab+cacb, ca), Eq(a_b+ca_b, 1),
                        Eq(a_cb+ca_cb, 1), Eq(b_a+cb_a,1), Eq(b_ca+cb_ca, 1),
@@ -86,6 +95,7 @@ class arbre_proba():
                        Eq(ca*cb_ca, cacb), Eq(b*a_b, ab), Eq(b*ca_b, cab),
                        Eq(cb*a_cb, acb), Eq(cb*ca_cb, cacb)]
         else:
+            self.indep = kwargs["indep"]
             self.SYS =[Eq(a+ca,1), Eq(b+cb,1), Eq(ab+cab, b), Eq(ab+acb,a),
                        Eq(acb+cacb, cb), Eq(cab+cacb, ca), Eq(a_b+ca_b, 1),
                        Eq(a_cb+ca_cb, 1), Eq(b_a+cb_a,1), Eq(b_ca+cb_ca, 1),
@@ -114,26 +124,29 @@ class arbre_proba():
                   "choice": self._format} 
         
         # dictionnaire de résolution complète: self.probas
-        # auparavant les valeurs inconnues sont remplacées par "…"
         solstmp = solve(self.SYS, self.unknown, dict=True)[0]
         dtmp = {k.name: v for k,v in solstmp.items()}
         self.probas.update(dtmp)
-        
-        if "a" in kwargs or "ca" in kwargs:
-            self.makeGrapheviz(1, prob=self.probas)
-        elif "b" in kwargs or "cb" in kwargs: #précaution test elif
-            self.makeGrapheviz(2, prob=self.probas)
-
+            
     def _wrap_gv(self, **kwargs):
         """générateur d'arbre graphviz
         """
         KW = dict({"intersection":False, "mode":'full', "render": "str",
                    "prob":self.probas})
         KW.update(kwargs)
+
         if "a" in self.known_names or "ca" in self.known_names:
             self.makeGrapheviz(1, **KW)
-        #précaution test elif
         elif "b" in self.known_names or "cb" in self.known_names: 
+            self.makeGrapheviz(2, **KW)
+        # cas sournois d'indépendance et prob cond et inters. connues
+        elif (self.indep and
+              not(set(["b_a", "b_ca", "cb_a",
+                       "cb_ca"]).isdisjoint(set(self.known_names)))):
+            self.makeGrapheviz(1, **KW)
+        elif (self.indep and
+              not(set(["a_b", "a_cb", "ca_b",
+                       "ca_cb"]).isdisjoint(set(self.known_names)))):
             self.makeGrapheviz(2, **KW)
             
     def enonce(self, **kwargs):
@@ -182,7 +195,7 @@ class arbre_proba():
     def _latex(self,p):
         return r"\({}\)".format(latex(p))
     
-    def makeGrapheviz(self, num, intersection=True, mode='full', render="str",
+    def makeGrapheviz(self, num, intersection=True, mode='full', render="choice",
                       prob=None):
         """construction de l'arbre pondéré 
 
@@ -240,15 +253,15 @@ class arbre_proba():
                             p = (f"{{:#.{preci-2}%}}").format(float(prob[tmp]))
                         else:
                             p = (f"{{:#.{2*self.precision-2}%}}").format(float(prob[tmp])) 
-                    elif self.nbformat=='decimal' and prob[tmp] !="…":
+                    elif self.nbformat == 'decimal' and prob[tmp] != "…":
                         if tmp in self.known_names:
                             preci = len(str(float(prob[tmp])).strip(".")[2])
                             p = (f"{{:#.{preci}f}}").format(float(prob[tmp]))
                         else:
                             p = (f"{{:#.{2*self.precision}f}}").format(float(prob[tmp]))
-                    elif self.nbformat=='decimal' and prob[tmp] !="…":
+                    elif self.nbformat == 'decimal' and prob[tmp] != "…":
                         p = str(prob[tmp])
-                    elif self.nbformat=='fraction':
+                    elif self.nbformat == 'fraction':
                         p = str(prob[tmp])
                     else:
                         p = "…"
